@@ -91,6 +91,29 @@ func (solver *CaptchaSolver) parseValue(value interface{}) (string, error) {
 	return "", fmt.Errorf("option could not be converted to string\n")
 }
 
+func (solver *CaptchaSolver) sendRecaptchaRequest(key string, pageURL string) (io.ReadCloser, error) {
+
+	data := url.Values{}
+	data.Add("key", solver.APIKey)
+	data.Add("method", "userrecaptcha")
+	data.Add("googlekey", key)
+	data.Add("pageurl", pageURL)
+
+	url := solver.RequestURL + "?" + data.Encode()
+
+	client := client()
+	res, err := client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Bad status of captcha request: %s", res.Status)
+	}
+
+	return res.Body, nil
+}
+
 func (solver *CaptchaSolver) sendRequest(file []byte) (io.ReadCloser, error) {
 	data := map[string]interface{}{
 		"phrase":   solver.IsPhrase,

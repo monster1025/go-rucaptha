@@ -38,11 +38,11 @@ func New(key string) *CaptchaSolver {
 }
 
 func client() *http.Client {
-	proxyURL, _ := url.Parse("http://127.0.0.1:8888")
+	// proxyURL, _ := url.Parse("http://127.0.0.1:8888")
 	tr := &http.Transport{
 		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
 		DisableKeepAlives: true,
-		Proxy:             http.ProxyURL(proxyURL),
+		// Proxy:             http.ProxyURL(proxyURL),
 	}
 	client := &http.Client{
 		Transport: tr,
@@ -178,7 +178,7 @@ func (solver *CaptchaSolver) WaitForReady(captchaID string) (*string, error) {
 
 	var answer *string
 	for {
-		time.Sleep(solver.CheckResultTimeout * time.Second)
+		time.Sleep(solver.CheckResultTimeout)
 
 		client := client()
 		response, err := client.Get(url + data.Encode())

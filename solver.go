@@ -53,6 +53,22 @@ func client() *http.Client {
 
 // Solve get image by path and redn request to rucaptcha service
 // Returns captcha code, captchaID and error if errors occured
+func (solver *CaptchaSolver) SolveRecaptchaV3(key string, pageURL string) (*string, *string, error) {
+	captchaID, err := solver.getReCaptchaV3ID(key, pageURL)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	answer, err := solver.WaitForReady(*captchaID)
+	if err != nil {
+		return nil, captchaID, err
+	}
+
+	return answer, captchaID, nil
+}
+
+// Solve get image by path and redn request to rucaptcha service
+// Returns captcha code, captchaID and error if errors occured
 func (solver *CaptchaSolver) SolveRecaptcha(key string, pageURL string) (*string, *string, error) {
 
 	captchaID, err := solver.getReCaptchaID(key, pageURL)
@@ -126,6 +142,40 @@ func (solver *CaptchaSolver) getReCaptchaID(key string, pageURL string) (*string
 
 	return &results[1], nil
 }
+
+func (solver *CaptchaSolver) getReCaptchaV3ID(key string, pageURL string) (*string, error) {
+
+	response, err := solver.sendRecaptchaV3Request(key, pageURL)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response)
+	if err != nil {
+		return nil, err
+	}
+
+	hasError := regexp.
+		MustCompile(`ERROR`).
+		MatchString(string(body))
+
+	if hasError {
+		return nil, fmt.Errorf("Captcha service error: %s\n", string(body))
+	}
+
+	isOk := regexp.
+		MustCompile(`OK`).
+		MatchString(string(body))
+
+	if !isOk {
+		return nil, fmt.Errorf("Unknown response: %s\n", string(body))
+	}
+
+	results := strings.Split(string(body), "|")
+
+	return &results[1], nil
+}
+
 func (solver *CaptchaSolver) getCaptchaID(file []byte) (*string, error) {
 
 	response, err := solver.sendRequest(file)

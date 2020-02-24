@@ -53,8 +53,8 @@ func client() *http.Client {
 
 // Solve get image by path and redn request to rucaptcha service
 // Returns captcha code, captchaID and error if errors occured
-func (solver *CaptchaSolver) SolveRecaptchaV3(key string, pageURL string) (*string, *string, error) {
-	captchaID, err := solver.getReCaptchaV3ID(key, pageURL)
+func (solver *CaptchaSolver) SolveRecaptchaV3(key string, pageURL string, action string) (*string, *string, error) {
+	captchaID, err := solver.getReCaptchaV3ID(key, pageURL, action)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -143,9 +143,9 @@ func (solver *CaptchaSolver) getReCaptchaID(key string, pageURL string) (*string
 	return &results[1], nil
 }
 
-func (solver *CaptchaSolver) getReCaptchaV3ID(key string, pageURL string) (*string, error) {
+func (solver *CaptchaSolver) getReCaptchaV3ID(key string, pageURL string, action string) (*string, error) {
 
-	response, err := solver.sendRecaptchaV3Request(key, pageURL)
+	response, err := solver.sendRecaptchaV3Request(key, pageURL, action)
 	if err != nil {
 		return nil, err
 	}

@@ -91,14 +91,14 @@ func (solver *CaptchaSolver) parseValue(value interface{}) (string, error) {
 	return "", fmt.Errorf("option could not be converted to string\n")
 }
 
-func (solver *CaptchaSolver) sendRecaptchaV3Request(key string, pageURL string) (io.ReadCloser, error) {
+func (solver *CaptchaSolver) sendRecaptchaV3Request(key string, pageURL string, action string) (io.ReadCloser, error) {
 	data := url.Values{}
 	data.Add("key", solver.APIKey)
 	data.Add("method", "userrecaptcha")
 	data.Add("googlekey", key)
 	data.Add("pageurl", pageURL)
 	data.Add("version", "v3")
-	data.Add("action", "register")
+	data.Add("action", action)
 	data.Add("min_score", "0.3")
 
 	url := solver.RequestURL + "?" + data.Encode()

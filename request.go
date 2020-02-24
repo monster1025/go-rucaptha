@@ -98,7 +98,7 @@ func (solver *CaptchaSolver) sendRecaptchaV3Request(key string, pageURL string) 
 	data.Add("googlekey", key)
 	data.Add("pageurl", pageURL)
 	data.Add("version", "v3")
-	data.Add("action", "firstClick")
+	data.Add("action", "register")
 	data.Add("min_score", "0.3")
 
 	url := solver.RequestURL + "?" + data.Encode()
@@ -122,6 +122,9 @@ func (solver *CaptchaSolver) sendRecaptchaRequest(key string, pageURL string) (i
 	data.Add("method", "userrecaptcha")
 	data.Add("googlekey", key)
 	data.Add("pageurl", pageURL)
+	data.Add("invisible", "1")
+	data.Add("proxy", "monster:passw0r4d@3.20.178.40:4242")
+	data.Add("proxytype", "HTTP")
 
 	url := solver.RequestURL + "?" + data.Encode()
 
